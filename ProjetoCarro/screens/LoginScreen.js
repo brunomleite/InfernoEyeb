@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, ImageBackground, Image } from 'react-native';
+import { View, Text, StyleSheet, Button, ImageBackground, Image, TouchableOpacity } from 'react-native';
 import firebase from 'firebase';
 
 class LoginScreen extends Component {
@@ -12,7 +12,6 @@ class LoginScreen extends Component {
             firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
           providerData[i].uid === googleUser.getBasicProfile().getId()
         ) {
-          // We don't need to reauth the Firebase connection.
           return true;
         }
       }
@@ -21,18 +20,14 @@ class LoginScreen extends Component {
   };
   onSignIn = googleUser => {
     console.log('Google Auth Response', googleUser);
-    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
     var unsubscribe = firebase.auth().onAuthStateChanged(
       function(firebaseUser) {
         unsubscribe();
-        // Check if we are already signed-in Firebase with the correct user.
         if (!this.isUserEqual(googleUser, firebaseUser)) {
-          // Build Firebase credential with the Google ID token.
           var credential = firebase.auth.GoogleAuthProvider.credential(
             googleUser.idToken,
             googleUser.accessToken
           );
-          // Sign in with credential from the Google user.
           firebase
             .auth()
             .signInAndRetrieveDataWithCredential(credential)
@@ -50,7 +45,6 @@ class LoginScreen extends Component {
                     created_at: Date.now()
                   })
                   .then(function(snapshot) {
-                    // console.log('Snapshot', snapshot);
                   });
               } else {
                 firebase
@@ -62,14 +56,10 @@ class LoginScreen extends Component {
               }
             })
             .catch(function(error) {
-              // Handle Errors here.
               var errorCode = error.code;
               var errorMessage = error.message;
-              // The email of the user's account used.
               var email = error.email;
-              // The firebase.auth.AuthCredential type that was used.
               var credential = error.credential;
-              // ...
             });
         } else {
           console.log('User already signed-in Firebase.');
@@ -81,11 +71,10 @@ class LoginScreen extends Component {
     try {
       const result = await Expo.Google.logInAsync({
         behavior: 'web',
-        androidClientId: 'AE:92:6F:14:BA:82:E2:1B:14:EA:5E:39:EA:81:AB:77:A7:E8:B1:2F',
+        androidClientId: '886102954423-m63rtia9dd3sc4rd4f2dnt14tr93l0ns.apps.googleusercontent.com',
         iosClientId: '886102954423-a9ihca33r72s6bur1j83ljnf712u2b8i.apps.googleusercontent.com',
         scopes: ['profile', 'email']
       });
-
       if (result.type === 'success') {
         this.onSignIn(result);
         return result.accessToken;
@@ -98,21 +87,40 @@ class LoginScreen extends Component {
   };
   render() {
     return (
-      <View style={styles.container}>
-      <ImageBackground source={require('/home/bruno/ProjetoCarro/imagens/background.jpeg')} style={{width: '100%', height: '100%'}}>
-        <View style={styles.welcome}>
-          <Text style={{fontSize: 25}}>
-            EyeB
-          </Text>
-          <Text style={{fontSize: 15}}>
-            Fazendo o Cego ver Desde 2019
+    <View 
+    accessible={true}
+    accessibilityLabel="Tela Inicial Do Aplicativo"
+    style={{flex: 1}}>
+    <ImageBackground 
+      source={require('/home/bruno/ProjetoCarro/imagens/eyebM.jpeg')} 
+      style={{flex: 1, width: '100%', height: '100%'}}>
+      <View style={{height:500, flexDirection: 'row', flexWrap: 'wrap'}}>
+        <View style={{height:'60%', width: '100%', alignItems: 'center', justifyContent: 'center'}}>
+          <Image 
+            source={require('/home/bruno/ProjetoCarro/imagens/iconeyeb.png')}
+            style={{width:200,  resizeMode:'contain'}}/>
+        </View>
+        <View style={{height:'0%', width:'100%', alignItems: 'center', justifyContent: 'center'}}>
+          <Text
+            style={{color: '#19D2E7', borderColor: '#19D2E7', borderWidth: 2, padding:10, paddingLeft:20, paddingRight: 20, fontSize: 30}}>
+            E y e B
           </Text>
         </View>
-        <View style ={styles.button}>
-          <Button title="Sign In With Google" onPress={() => this.signInWithGoogleAsync()}/>
+        <View style={{height:'110%', width:'100%', alignItems: 'center', justifyContent: 'center'}}>
+          <TouchableOpacity 
+            accessible={true}
+            accessibilityLabel="Botão de Começar"
+            accessibilityHint="ir para tela de Cadastro"
+            style={{marginTop: 10}}
+            onPress={() => {this.signInWithGoogleAsync(); }}>
+            <Text style={{fontSize: 30, backgroundColor: 'rgba(47,163,218,.4)', borderRadius:4, paddingLeft:30, paddingRight:30, padding: 10, color: 'white'}}>
+            Sign In
+            </Text>
+          </TouchableOpacity>
         </View>
-        </ImageBackground>
       </View>
+    </ImageBackground>
+    </View>
     );
   }
 }
@@ -121,13 +129,11 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: 'orange'
   },
   welcome: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    //backgroundColor: 'dodgerblue'
   },
   button: {
     flex: 1,

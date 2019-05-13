@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Button, Alert, Vibration } from 'react-native';
 import { Constants, BarCodeScanner, Permissions } from 'expo';
@@ -5,41 +6,54 @@ import firebase from 'firebase';
 
 class DashboardScreen extends Component {
   state = {
-    hasCameraPermission: null
+    hasCameraPermission: null,
+    scanned: false,
   };
 
-  componentDidMount() {
-    this._requestCameraPermission();
+  async componentDidMount() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ hasCameraPermission: status === 'granted' });
   }
 
-  _requestCameraPermission = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({
-      hasCameraPermission: status === 'granted',
-    });
-  };
-
   _handleBarCodeRead = data => {
-    Alert.alert(
-      'Placa do Carrinho!',
-      JSON.stringify(data)
-    );
-    Vibration.vibrate(10000);
+    if (data['data'] == "obv - 9057"){
+      console.log("Achou")
+      this.setState({ scanned: true });
+      Alert.alert("Carro Encontrado, se dirija para ele")
+      Vibration.vibrate(3000)
+    }
   };
 
   render() {
+    const { hasCameraPermission, scanned } = this.state;
+
+    if (hasCameraPermission === null) {
+      return <Text>Requesting for camera permission</Text>;
+    }
+    if (hasCameraPermission === false) {
+      return <Text>No access to camera</Text>;
+    }
     return (
-      <View style={styles.container}>
-        {this.state.hasCameraPermission === null ?
-          <Text>Requesting for camera permission</Text> :
-          this.state.hasCameraPermission === false ?
-            <Text>Camera permission is not granted</Text> :
-            <BarCodeScanner
-              onBarCodeRead={this._handleBarCodeRead}
-              style={{ height: '90%', width: '100%' }}
-            />
-        }
-        <Button title = "Sign out" onPress = {() => firebase.auth().signOut()} />
+      <View
+      accessible={true}
+      accessibilityLabel="tela do codigo QR, procure pelo seu motorista"
+      style={styles.container}>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : this._handleBarCodeRead}
+          style={StyleSheet.absoluteFillObject}
+        />
+
+        {scanned && (
+          <Button
+          accessible={true}
+          accessibilityLabel="Aperte Para Scanear de Novo"
+          title={'Tap to Scan Again'} onPress={() => this.setState({ scanned: false })} />
+        )}
+        <Button
+          accessible={true}
+          accessibilityLabel="Botão de Sair"
+          style={{alignItems: 'center', justifyContent: 'flex-end'}}
+          title = "Sign out" onPress = {() => firebase.auth().signOut()} />
       </View>
     );
   }
