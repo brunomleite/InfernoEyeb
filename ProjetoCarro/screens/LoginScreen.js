@@ -92,12 +92,12 @@ class LoginScreen extends Component {
     accessibilityLabel="Tela Inicial Do Aplicativo"
     style={{flex: 1}}>
     <ImageBackground 
-      source={require('/home/bruno/ProjetoCarro/imagens/eyebM.jpeg')} 
+      source={require('/home/bruno/p_integrado/InfernoEyeb/ProjetoCarro/imagens/eyebM.jpeg')} 
       style={{flex: 1, width: '100%', height: '100%'}}>
       <View style={{height:500, flexDirection: 'row', flexWrap: 'wrap'}}>
         <View style={{height:'60%', width: '100%', alignItems: 'center', justifyContent: 'center'}}>
           <Image 
-            source={require('/home/bruno/ProjetoCarro/imagens/iconeyeb.png')}
+            source={require('/home/bruno/p_integrado/InfernoEyeb/ProjetoCarro/imagens/iconeyeb.png')}
             style={{width:200,  resizeMode:'contain'}}/>
         </View>
         <View style={{height:'0%', width:'100%', alignItems: 'center', justifyContent: 'center'}}>

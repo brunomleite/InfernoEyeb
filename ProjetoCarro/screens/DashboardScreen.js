@@ -1,8 +1,8 @@
-
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, Alert, Vibration } from 'react-native';
+import { View, Text, StyleSheet, Button, Alert, Vibration, TouchableOpacity } from 'react-native';
 import { Constants, BarCodeScanner, Permissions } from 'expo';
-import firebase from 'firebase';
+import {placa} from '../App.js';
+import firebase from 'firebase'
 
 class DashboardScreen extends Component {
   state = {
@@ -16,10 +16,10 @@ class DashboardScreen extends Component {
   }
 
   _handleBarCodeRead = data => {
-    if (data['data'] == "obv - 9057"){
+    if (data['data'] == placa){
       console.log("Achou")
       this.setState({ scanned: true });
-      Alert.alert("Carro Encontrado, se dirija para ele")
+      Alert.alert("Placa ["+ placa + "] encontrada!")
       Vibration.vibrate(3000)
     }
   };
@@ -34,7 +34,7 @@ class DashboardScreen extends Component {
       return <Text>No access to camera</Text>;
     }
     return (
-      <View
+      <View 
       accessible={true}
       accessibilityLabel="tela do codigo QR, procure pelo seu motorista"
       style={styles.container}>
@@ -42,18 +42,22 @@ class DashboardScreen extends Component {
           onBarCodeScanned={scanned ? undefined : this._handleBarCodeRead}
           style={StyleSheet.absoluteFillObject}
         />
-
-        {scanned && (
-          <Button
-          accessible={true}
-          accessibilityLabel="Aperte Para Scanear de Novo"
-          title={'Tap to Scan Again'} onPress={() => this.setState({ scanned: false })} />
-        )}
-        <Button
-          accessible={true}
-          accessibilityLabel="Botão de Sair"
-          style={{alignItems: 'center', justifyContent: 'flex-end'}}
-          title = "Sign out" onPress = {() => firebase.auth().signOut()} />
+        <View style={{height:'10%', width:'100%', alignItems: 'center', justifyContent: 'center'}}></View>
+          <TouchableOpacity
+            accessible={true}
+            accessibilityLabel="Botão de Sair"
+            onPress = {() => firebase.auth().signOut()} >
+              <Text style={{fontSize: 20, backgroundColor: 'rgba(47,163,218,.4)', borderRadius:4, paddingLeft:20, paddingRight:20, padding: 10, color: 'white'}}>
+                Sign Out
+              </Text>
+          </TouchableOpacity>
+          {scanned && (
+            <TouchableOpacity 
+              accessible={true}
+              accessibilityLabel="Aperte Para Scanear de Novo"
+              onPress={() => this.setState({ scanned: false })}>  
+            </TouchableOpacity>
+          )}        
       </View>
     );
   }
@@ -63,8 +67,9 @@ export default DashboardScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-end',
+    marginTop: -70,
+    marginRight: 7,
     paddingTop: Constants.statusBarHeight,
     backgroundColor: '#ecf0f1',
   }
